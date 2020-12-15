@@ -38,31 +38,6 @@ stages:
         version: 2.2.x
         installationPath: $(Agent.ToolsDirectory)/dotnet        
   
-    # Restore dependencies
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet restore'
-      inputs:
-        command: restore
-        projects: '**/*.csproj'
-
-    # Build app
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet build'
-      inputs:
-        command: build
-        projects: '**/*.csproj'
-        arguments: '--configuration $(buildConfiguration)'
-
-
-    # Publish the app
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet publish'
-      inputs:
-        command: publish
-        publishWebProjects: True
-        arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)/PublishedWebApp'
-        zipAfterPublish: false
-
     # Build container image
     - task: Docker@1
       displayName: 'Build container image'
