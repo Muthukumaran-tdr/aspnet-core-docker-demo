@@ -5,11 +5,11 @@ trigger:
 variables:
   buildConfiguration: 'Release'
   location: 'West US 2'
-  acrHostName: 'APITestDemo001acr.azurecr.io'
-  acrName: 'APITestDemo001acr'
-  rgName: 'APITestDemo001-rg'
-  imageName: 'APITestDemo001'
-  webAppName: 'APITestDemo001'
+  acrHostName: 'gicdemowebappdocker002acr.azurecr.io'
+  acrName: 'gicdemowebappdocker002acr'
+  rgName: 'gicdemowebappdocker002-rg'
+  imageName: 'gicdemowebappdocker002'
+  webAppName: 'gicdemowebappdocker002'
 
 stages:
 
@@ -38,6 +38,31 @@ stages:
         version: 2.2.x
         installationPath: $(Agent.ToolsDirectory)/dotnet        
   
+    # Restore dependencies
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
+
+    # Build Test Framework
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: build
+        projects: '**/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+
+
+    # Publish the test Framework
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet publish'
+      inputs:
+        command: publish
+        publishWebProjects: True
+        arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)/PublishedWebApp'
+        zipAfterPublish: false
+
     # Build container image
     - task: Docker@1
       displayName: 'Build container image'
@@ -69,9 +94,9 @@ stages:
       artifact: app
 
 # Staging release
-- stage: WepAPITest
+- stage: Staging
   jobs:
-  - job: WepAPITest
+  - job: Release
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
@@ -81,8 +106,8 @@ stages:
     # Download the published application artifact
     - download: current
       artifact: app
-
-    # Run WebAPI tests
+      
+    # Run unit tests
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:
