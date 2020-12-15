@@ -96,7 +96,7 @@ stages:
 # Staging Testing
 - stage: Test
   jobs:
-  - job: API Test
+  - job: API_Test
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
