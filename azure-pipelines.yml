@@ -5,11 +5,11 @@ trigger:
 variables:
   buildConfiguration: 'Release'
   location: 'West US 2'
-  acrHostName: 'gicdemowebappdocker002acr.azurecr.io'
-  acrName: 'gicdemowebappdocker002acr'
-  rgName: 'gicdemowebappdocker002-rg'
-  imageName: 'gicdemowebappdocker002'
-  webAppName: 'gicdemowebappdocker002'
+  acrHostName: 'APITest001acr.azurecr.io'
+  acrName: 'APITest001acr'
+  rgName: 'APITest001-rg'
+  imageName: 'APITest001'
+  webAppName: 'APITest001'
 
 stages:
 
@@ -93,10 +93,10 @@ stages:
     - publish: $(Build.StagingDirectory)
       artifact: app
 
-# Staging release
-- stage: Staging
+# Staging Testing
+- stage: Test
   jobs:
-  - job: Release
+  - job: API Test
     pool:
       vmImage: 'Ubuntu-16.04'
     steps:
@@ -107,9 +107,9 @@ stages:
     - download: current
       artifact: app
       
-    # Run unit tests
+    # Run API tests
     - task: DotNetCoreCLI@2
-      displayName: Test
+      displayName: API Tests
       inputs:
         command: test
         projects: '**/*UnitTests/*.csproj'
